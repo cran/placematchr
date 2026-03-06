@@ -9,8 +9,8 @@ It is widely used to harmonize messy geographical data (survey responses, addres
 
 *   **Broad Coverage**: Supports all EU/EEA countries
 *   **English Exonym Support**: Handles common English names for major cities (e.g., "Munich" matches "München", "Prague" matches "Praha", "Florence" matches "Firenze", "Cologne" matches "Köln").
-*   **Robust Suburb Handling**:
-    *   Normalizes suburb suffixes (e.g., "Garching b. München" -> "Garching", "Champs-sur-Marne" -> "Champs").
+*   **Robust Suburb Handling** (Resolves to the Suburb's LAU, not the Central City):
+    *   Normalizes suburb suffixes by stripping them (e.g., "Garching b. München" -> "Garching"). The matching logic then aligns with the suburb's specific LAU, ensuring precise local mapping rather than defaulting to the central metropolitan area.
     *   Correctly disambiguates complex cases like "Frankfurt (Oder)" vs "Frankfurt am Main".
     *   Handles article inversions in Spanish/French (e.g., "Rozas, Las" -> "Las Rozas").
 *   **Cascading Matching Logic**:
@@ -38,7 +38,8 @@ match_city(cities, country = "IT")
 ### Handling Suburbs and Variations
 ```r
 # Input: "Garching b. München" (Suburb)
-# Result: Matches "Garching" (LAU). Mapped to Munich District (NUTS).
+# Result: The suffix "b. München" is stripped. The base name "Garching" is matched against LAUs.
+# Final Match: "Garching" (LAU). Mapped to Munich District (NUTS 3: DE21H), *not* Munich City (DE212).
 match_city("Garching b. München", country = "DE")
 
 # Input: "Champs-sur-Marne" (French Suburb)
